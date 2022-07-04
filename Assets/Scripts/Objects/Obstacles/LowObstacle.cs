@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealItem : ItemsMove
+public class LowObstacle : ItemsMove
 {
     private void Start()
     {
@@ -17,11 +17,11 @@ public class HealItem : ItemsMove
 
     private void OnTriggerEnter(Collider other)
     {
-        IHeal thisHeal = other.gameObject.GetComponent<IHeal>();
+        ITakeDamage lowDmg = other.gameObject.GetComponent<ITakeDamage>();
 
-        if (thisHeal != null)
+        if (lowDmg != null)
         {
-            thisHeal.ApplyHealth();
+            lowDmg.DownDamage();
             Destroy(gameObject);
         }
     }

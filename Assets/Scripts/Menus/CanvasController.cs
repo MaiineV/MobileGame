@@ -63,6 +63,7 @@ public class CanvasController : MonoBehaviour
     void DmgLife(params object[] parameter)
     {
         lifes[(int)parameter[0]].SetActive(false);
+        Debug.Log(parameter[0]);
 
         if((int)parameter[0] <= 0)
         {

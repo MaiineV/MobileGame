@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealItem : ItemsMove
+public class ShieldItem : ItemsMove
 {
-    private void Start()
+    void Start()
     {
         EventManager.Subscribe("ChangeBool", ChangeBool);
     }
@@ -17,12 +17,13 @@ public class HealItem : ItemsMove
 
     private void OnTriggerEnter(Collider other)
     {
-        IHeal thisHeal = other.gameObject.GetComponent<IHeal>();
+        IShield playerShield = other.gameObject.GetComponent<IShield>();
 
-        if (thisHeal != null)
+        if (playerShield != null)
         {
-            thisHeal.ApplyHealth();
+            playerShield.ActiveShield();
             Destroy(gameObject);
         }
     }
+
 }

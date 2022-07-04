@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-
     public AudioClip[] sounds;
     public AudioClip[] music;
     public AudioSource[] sfxChannel;

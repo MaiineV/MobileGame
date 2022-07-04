@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HighItem : ItemsMove
+public class HighObstacle : ItemsMove
 {
     private void Start()
     {
@@ -17,11 +17,11 @@ public class HighItem : ItemsMove
 
     private void OnTriggerEnter(Collider other)
     {
-        ITotalDmg totalDmg = other.gameObject.GetComponent<ITotalDmg>();
+        ITakeDamage topDamage = other.gameObject.GetComponent<ITakeDamage>();
 
-        if (totalDmg != null)
+        if (topDamage != null)
         {
-            totalDmg.TotalDmg();
+            topDamage.TopDamage();
             Destroy(gameObject);
         }
     }

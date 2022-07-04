@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LowItem : ItemsMove
+public class TotalObstacle : ItemsMove
 {
-    private void Start()
+    void Start()
     {
         EventManager.Subscribe("ChangeBool", ChangeBool);
     }
@@ -17,11 +17,11 @@ public class LowItem : ItemsMove
 
     private void OnTriggerEnter(Collider other)
     {
-        ILowDmg lowDmg = other.gameObject.GetComponent<ILowDmg>();
+        ITakeDamage fullDamage = other.gameObject.GetComponent<ITakeDamage>();
 
-        if (lowDmg != null)
+        if (fullDamage != null)
         {
-            lowDmg.LowDmg();
+            fullDamage.TotalDamage();
             Destroy(gameObject);
         }
     }

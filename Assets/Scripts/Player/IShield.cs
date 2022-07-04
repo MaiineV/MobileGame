@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ITotalDmg
+public interface IShield
 {
-    public void TotalDmg();
+    public void ActiveShield();
 }
