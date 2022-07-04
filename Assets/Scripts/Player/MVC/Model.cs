@@ -21,8 +21,8 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield
     public enum viewNames {STAY, MOVEMENT, JUMP, SLIDE, DEATH, SHIELDIN, SHIELDOUT}
     public List<Action> actionsList = new List<Action>(7);
 
-    public event Action<float> healthTake;
-    public event Action<float> damageTake;
+    public event Action<int> healthTake;
+    public event Action<int> damageTake;
 
     public delegate void DamageEntry();
     public DamageEntry fromTop;
@@ -151,8 +151,8 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield
     {
         if (_life < _maxLife)
         {
-            _life++;
             healthTake?.Invoke(_life);
+            _life++;
         }
     }
 

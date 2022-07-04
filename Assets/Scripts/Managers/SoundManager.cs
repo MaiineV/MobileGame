@@ -33,6 +33,7 @@ public class SoundManager : MonoBehaviour
         {
             sfxChannel[i] = gameObject.AddComponent<AudioSource>();
             sfxChannel[i].clip = sounds[i];
+            sfxChannel[i].playOnAwake = false;
         }
 
         musicChannel = new AudioSource[music.Length];
@@ -40,6 +41,9 @@ public class SoundManager : MonoBehaviour
         {
             musicChannel[i] = gameObject.AddComponent<AudioSource>();
             musicChannel[i].clip = music[i];
+            musicChannel[i].loop = true;
+            musicChannel[i].playOnAwake = true;
+            musicChannel[i].Play();
         }
 
     }

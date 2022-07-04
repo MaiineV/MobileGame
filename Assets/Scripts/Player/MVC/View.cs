@@ -49,7 +49,7 @@ public class View : MonoBehaviour
         //sonido
     }
 
-    public void V_TakeDamage(float life)
+    public void V_TakeDamage(int life)
     {
         //Poner animacion de dmg
         //cambiar mat a rojo
@@ -58,7 +58,7 @@ public class View : MonoBehaviour
         EventManager.Trigger("DmgLife", life);
     }
 
-    public void V_TakeHealth(float life)
+    public void V_TakeHealth(int life)
     {
         //Particulas de cura
         SoundManager.instance.PlaySound(SoundID.HEAL);
