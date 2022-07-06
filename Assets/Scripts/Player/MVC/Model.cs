@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield
+public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
 {
     public List<Transform> posibleMove;
     public int actualPosition = 1;
@@ -54,6 +54,8 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield
         allDamage = ApplyDmg;
 
         _life = _maxLife;
+
+        _shieldTimer = _shieldTimer * (PlayerPrefs.GetInt("ShieldLevel") + 1);
 
         EventManager.Subscribe("ChangeBool", InitialVoid);
     }
@@ -173,6 +175,13 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield
         allDamage = ApplyDmg;
         fromBot = ApplyDmg;
         fromTop = ApplyDmg;
+    }
+
+    public void AddCoin(int value)
+    {
+        int finalValue = value * (PlayerPrefs.GetInt("CoinLevel") + 1);
+        CoinManager.instance.AddCoins(finalValue);
+        EventManager.Trigger("AddScore", finalValue);
     }
     #endregion
 

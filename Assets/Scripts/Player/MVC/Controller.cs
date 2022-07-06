@@ -21,6 +21,7 @@ public class Controller
         _model.actionsList[(int)Model.viewNames.DEATH] += view.V_Death;
         _model.actionsList[(int)Model.viewNames.SHIELDIN] += view.V_ShieldOn;
         _model.actionsList[(int)Model.viewNames.SHIELDOUT] += view.V_ShieldOff;
+        _model.actionsList[(int)Model.viewNames.SLIDE] += view.V_Slide;
 
         _model.healthTake += view.V_TakeHealth;
         _model.damageTake += view.V_TakeDamage;
@@ -43,15 +44,23 @@ public class Controller
     {
         if (finalPosSwipe.y > (initPosSwipe.y + distancePixel) || Input.GetKeyDown(KeyCode.W))
         {
+            Debug.Log("a");
             _model.Jump();
         }
         else if (finalPosSwipe.x > (initPosSwipe.x + distancePixel) || Input.GetKeyDown(KeyCode.D))
         {
+            Debug.Log("b");
             _model.Move(true);
         }
         else if (initPosSwipe.x > (finalPosSwipe.x + distancePixel) || Input.GetKeyDown(KeyCode.A))
         {
+            Debug.Log("c");
             _model.Move(false);
+        }
+        else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel))
+        {
+            Debug.Log("d");
+            _model.Slide();
         }
     }
 }

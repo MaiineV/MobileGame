@@ -16,13 +16,18 @@ public class MainMenu : MonoBehaviour
     public Toggle musicToggle;
     public Toggle soundToggle;
 
-    public Text coinText;
-    public Text healthText;
-    public Text shieldText;
+    public Text coinLVLText;
+    public Text healthLVLText;
+    public Text shieldLVLText;
+    public Text ammountCoins;
 
     public int maxCoinLVL;
     public int maxHealthLVL;
     public int maxShieldLVL;
+
+    public int coinCost;
+    public int healthCost;
+    public int shieldCost;
 
     GameObject actualMenu;
     public bool isOnSplash = true;
@@ -40,6 +45,11 @@ public class MainMenu : MonoBehaviour
             soundToggle.isOn = false;
         else
             soundToggle.isOn = true;
+
+        ammountCoins.text = "Coins: " + PlayerPrefs.GetInt("Coins");
+        coinLVLText.text = "Coin Level " + PlayerPrefs.GetInt("CoinLevel");
+        healthLVLText.text = "Health Level " + PlayerPrefs.GetInt("HealthLevel");
+        shieldLVLText.text = "Shield Level " + PlayerPrefs.GetInt("ShieldLevel");
     }
 
     private void Update()
@@ -66,28 +76,31 @@ public class MainMenu : MonoBehaviour
 
     public void BTN_UpgradeCoin()
     {
-        if (PlayerPrefs.GetInt("CoinLevel") < maxCoinLVL)
+        if (PlayerPrefs.GetInt("CoinLevel") < maxCoinLVL && CoinManager.instance.CheckCost(coinCost))
         {
             PlayerPrefs.SetInt("CoinLevel", PlayerPrefs.GetInt("CoinLevel") + 1);
-            coinText.text = "Coin Level " + PlayerPrefs.GetInt("CoinLevel");
+            coinLVLText.text = "Coin Level " + PlayerPrefs.GetInt("CoinLevel");
+            ammountCoins.text = "Coins: " + PlayerPrefs.GetInt("Coins");
         }
     }
 
     public void BTN_UpgradeHealth()
     {
-        if (PlayerPrefs.GetInt("HealthLevel") < maxHealthLVL)
+        if (PlayerPrefs.GetInt("HealthLevel") < maxHealthLVL && CoinManager.instance.CheckCost(healthCost))
         {
             PlayerPrefs.SetInt("HealthLevel", PlayerPrefs.GetInt("HealthLevel") + 1);
-            healthText.text = "Health Level " + PlayerPrefs.GetInt("HealthLevel");
+            healthLVLText.text = "Health Level " + PlayerPrefs.GetInt("HealthLevel");
+            ammountCoins.text = "Coins: " + PlayerPrefs.GetInt("Coins");
         }
     }
 
     public void BTN_UpgradeShield()
     {
-        if (PlayerPrefs.GetInt("HealthLevel") < maxShieldLVL)
+        if (PlayerPrefs.GetInt("ShieldLevel") < maxShieldLVL && CoinManager.instance.CheckCost(shieldCost))
         {
-            PlayerPrefs.SetInt("HealthLevel", PlayerPrefs.GetInt("HealthLevel") + 1);
-            healthText.text = "Health Level " + PlayerPrefs.GetInt("HealthLevel");
+            PlayerPrefs.SetInt("ShieldLevel", PlayerPrefs.GetInt("ShieldLevel") + 1);
+            shieldLVLText.text = "Shield Level " + PlayerPrefs.GetInt("ShieldLevel");
+            ammountCoins.text = "Coins: " + PlayerPrefs.GetInt("Coins");
         }
     }
 

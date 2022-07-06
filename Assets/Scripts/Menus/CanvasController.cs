@@ -8,6 +8,7 @@ public class CanvasController : MonoBehaviour
 {
     public List<GameObject> lifes;
     public GameObject loseScreen;
+    public GameObject addScreen;
     public GameObject initialScreen;
     public GameObject pauseScreen;
     public GameObject baseScreen;
@@ -21,6 +22,8 @@ public class CanvasController : MonoBehaviour
     {
         EventManager.Subscribe("DmgLife", DmgLife);
         EventManager.Subscribe("HealLife", HealLife);
+        EventManager.Subscribe("AddScore", AddScore);
+        EventManager.Subscribe("Finish", FinishRun);
     }
 
     private void Update()
@@ -50,6 +53,19 @@ public class CanvasController : MonoBehaviour
         EventManager.Trigger("ChangeBool");
     }
 
+    public void BTN_SeeAdd()
+    {
+        AddsManager.instance.ShowAdd();
+    }
+
+    public void BTN_SkipAdd()
+    {
+        CoinManager.instance.AddCoins((int)score);
+        addScreen.SetActive(false);
+        loseScreen.SetActive(true);
+        scoreLoseText.text = "Score: " + (int)score;
+    }
+
     public void BTN_Quit()
     {
         SceneManager.LoadScene("MainMenu");
@@ -60,15 +76,37 @@ public class CanvasController : MonoBehaviour
         SceneManager.LoadScene("Level1");
     }
 
+    void FinishRun(params object[] parameter)
+    {
+        int finalScore;
+        if ((int)parameter[0] == 0)
+            finalScore = (int)score;
+        else if ((int)parameter[0] == 1)
+            finalScore = (int)score + (int)((int)score * 0.25);
+        else if ((int)parameter[0] == 2)
+            finalScore = (int)score * 2;
+        else
+            finalScore = (int)score;
+
+        CoinManager.instance.AddCoins(finalScore);
+        addScreen.SetActive(false);
+        loseScreen.SetActive(true);
+        scoreLoseText.text = "Score: " + finalScore;
+    }
+
+    void AddScore(params object[] parameter)
+    {
+        score += (int)parameter[0];
+    }
+
     void DmgLife(params object[] parameter)
     {
         lifes[(int)parameter[0]].SetActive(false);
         Debug.Log(parameter[0]);
 
-        if((int)parameter[0] <= 0)
+        if ((int)parameter[0] <= 0)
         {
-            scoreLoseText.text = "Score: " + (int)score;
-            loseScreen.SetActive(true);
+            addScreen.SetActive(true);
             baseScreen.gameObject.SetActive(false);
         }
     }

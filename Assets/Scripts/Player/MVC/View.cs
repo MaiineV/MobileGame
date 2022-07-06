@@ -5,6 +5,7 @@ using UnityEngine;
 public class View : MonoBehaviour
 {
     Animator _animator;
+    public GameObject shield;
 
     void Start()
     {
@@ -34,18 +35,19 @@ public class View : MonoBehaviour
     {
         //pausar caminata
         //sonido slide
-        //_animator.SetTrigger("Slide");
+        Debug.Log("toy aca");
+        _animator.SetTrigger("Slide");
     }
 
     public void V_ShieldOn()
     {
-        //activar escudo
+        shield.SetActive(true);
         //sonido
     }
 
     public void V_ShieldOff()
     {
-        //desactivar escudo
+        shield.SetActive(false);
         //sonido
     }
 
