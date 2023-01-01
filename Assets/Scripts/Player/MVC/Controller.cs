@@ -57,7 +57,7 @@ public class Controller
             Debug.Log("c");
             _model.Move(false);
         }
-        else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel))
+        else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel) || Input.GetKeyDown(KeyCode.S))
         {
             Debug.Log("d");
             _model.Slide();

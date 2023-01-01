@@ -63,6 +63,7 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
     void Update()
     {
         _controller?.OnUpdate();
+        _controller?.GetDir();
     }
 
     #region STARTING VOID

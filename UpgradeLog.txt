@@ -1,0 +1,2 @@
+Se anado MVC al player y localization manager con algunas 
+modificaciones para el funcionamiento en cambio de menus y escenas, junto con guardados de datos
