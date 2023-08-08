@@ -6,6 +6,7 @@ using System;
 public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
 {
     public List<Transform> posibleMove;
+    [SerializeField] private Collider[] _colliders; 
     public int actualPosition = 1;
     public LayerMask floorMask;
 
@@ -38,12 +39,12 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
         EventManager.ResetEventDictionary();
     }
 
-    void Start()
+    private void Start()
     {
-        for (int i = 0; i < 7; i++)
+        for (var i = 0; i < 7; i++)
         {
-            Action a = delegate { };
-            actionsList.Add(a);
+            Action newAction = delegate { };
+            actionsList.Add(newAction);
         }
 
         _controller = new Controller(this, GetComponent<View>());
@@ -106,6 +107,13 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
     {
         if (_canMoveVertical)
         {
+            foreach (var actualCollider in _colliders)
+            {
+                actualCollider.enabled = false;
+            }
+
+            _colliders[1].enabled = true;
+            
             fromTop = delegate { };
             _canMoveVertical = false;
             actionsList[(int)viewNames.SLIDE]?.Invoke();
@@ -114,6 +122,13 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
 
     public void StopSlide()
     {
+        foreach (var actualCollider in _colliders)
+        {
+            actualCollider.enabled = false;
+        }
+
+        _colliders[0].enabled = true;
+        
         _canMoveVertical = true;
         fromTop = ApplyDmg;
         actionsList[(int)viewNames.MOVEMENT]?.Invoke();

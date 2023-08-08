@@ -19,6 +19,5 @@ public class TextTranslate : MonoBehaviour
     void ChangeLang()
     {
         _myView.text = _manager.GetTranslate(_ID);
-        Debug.Log("cambie?");
     }
 }

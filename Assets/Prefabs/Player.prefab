@@ -631,6 +631,7 @@ GameObject:
   - component: {fileID: 2980329076598936977}
   - component: {fileID: 3375158733231354471}
   - component: {fileID: 3375158733231354470}
+  - component: {fileID: 5928516242679922976}
   - component: {fileID: 3375158733231354469}
   - component: {fileID: 3375158733231354488}
   - component: {fileID: 3375158733231354468}
@@ -690,6 +691,20 @@ CapsuleCollider:
   m_Height: 1.8904624
   m_Direction: 1
   m_Center: {x: 0, y: 0.9350388, z: 0}
+--- !u!136 &5928516242679922976
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2456591747145453355}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.4898076, z: 0}
 --- !u!95 &3375158733231354469
 Animator:
   serializedVersion: 3
@@ -725,6 +740,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  _colliders:
+  - {fileID: 3375158733231354470}
+  - {fileID: 5928516242679922976}
   actualPosition: 1
   floorMask:
     serializedVersion: 2
@@ -744,6 +762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ba56d909b686584980a5122906b5213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shield: {fileID: 0}
 --- !u!1 &2481205050915241253
 GameObject:
   m_ObjectHideFlags: 0

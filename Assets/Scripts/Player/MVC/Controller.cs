@@ -42,25 +42,42 @@ public class Controller
 
     public void GetDir()
     {
-        if (finalPosSwipe.y > (initPosSwipe.y + distancePixel) || Input.GetKeyDown(KeyCode.W))
+#if UNITY_ANDROID
+        // if (finalPosSwipe.y > (initPosSwipe.y + distancePixel))
+        // {
+        //     _model.Jump();
+        // }
+        // else if (finalPosSwipe.x > (initPosSwipe.x + distancePixel))
+        // {
+        //     _model.Move(true);
+        // }
+        // else if (initPosSwipe.x > (finalPosSwipe.x + distancePixel))
+        // {
+        //     _model.Move(false);
+        // }
+        // else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel))
+        // {
+        //     _model.Slide();
+        // }
+#endif
+
+#if UNITY_EDITOR_WIN
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            Debug.Log("a");
             _model.Jump();
         }
-        else if (finalPosSwipe.x > (initPosSwipe.x + distancePixel) || Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
-            Debug.Log("b");
             _model.Move(true);
         }
-        else if (initPosSwipe.x > (finalPosSwipe.x + distancePixel) || Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log("c");
             _model.Move(false);
         }
-        else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel) || Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKeyDown(KeyCode.S))
         {
-            Debug.Log("d");
             _model.Slide();
         }
+#endif
     }
 }

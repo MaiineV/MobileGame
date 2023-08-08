@@ -63,6 +63,11 @@ public class LangManager : MonoBehaviour
 
     public string GetTranslate(string id)
     {
+        if (_languageManager == null)
+        {
+            return "There is no dictionary";
+        }
+        
         if (!_languageManager[_selectedLanguage].ContainsKey(id))
         {
             return "Error 404: Not Found";
