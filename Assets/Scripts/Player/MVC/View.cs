@@ -21,6 +21,7 @@ public class View : MonoBehaviour
     public void V_Walk()
     {
         //sonido caminata
+        _animator.SetBool("Jump", false);
         _animator.SetTrigger("Run");
     }
 
@@ -28,14 +29,13 @@ public class View : MonoBehaviour
     {
         //pausar caminata
         //sonido salto
-        _animator.SetTrigger("Jump");
+        _animator.SetBool("Jump", true);
     }
 
     public void V_Slide()
     {
         //pausar caminata
         //sonido slide
-        Debug.Log("toy aca");
         _animator.SetTrigger("Slide");
     }
 

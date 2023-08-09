@@ -54,7 +54,7 @@ public class MainMenu : MonoBehaviour
 
     private void Update()
     {
-        if (isOnSplash && Input.touchCount > 0)
+        if (isOnSplash && (Input.touchCount > 0 || Input.anyKey))
         {
             splashScreen.SetActive(false);
             mainScreen.SetActive(true);
@@ -144,6 +144,11 @@ public class MainMenu : MonoBehaviour
             SoundManager.instance.ChangeVolumeSound(0);
             PlayerPrefs.SetInt("Sound", 0);
         }
+    }
+
+    public void SetButtons(int button)
+    {
+        PlayerPrefs.SetInt("ActualControls", button);
     }
 
     public void BTN_Tutorial()

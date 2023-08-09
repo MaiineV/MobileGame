@@ -11,6 +11,7 @@ public class CanvasController : MonoBehaviour
     public GameObject addScreen;
     public GameObject initialScreen;
     public GameObject pauseScreen;
+    public GameObject optionsMenu;
     public GameObject baseScreen;
 
     public Text scoreText;
@@ -18,16 +19,25 @@ public class CanvasController : MonoBehaviour
 
     public Text scoreLoseText;
 
-    void Start()
+    private bool _isPlaying = false;
+
+    [SerializeField] private Button[] _movementButtons;
+    [SerializeField] private GameObject _buttonsParent;
+
+    private void Awake()
     {
         EventManager.Subscribe("DmgLife", DmgLife);
         EventManager.Subscribe("HealLife", HealLife);
         EventManager.Subscribe("AddScore", AddScore);
         EventManager.Subscribe("Finish", FinishRun);
+        EventManager.Subscribe("SetButtons", SetButtons);
+        EventManager.Subscribe("ChangeButtons", ChangeButtons);
     }
 
     private void Update()
     {
+        if (!_isPlaying) return;
+        
         score += Time.deltaTime;
         scoreText.text = "Score: " + (int)score;
     }
@@ -36,6 +46,7 @@ public class CanvasController : MonoBehaviour
     {
         initialScreen.gameObject.SetActive(false);
         baseScreen.gameObject.SetActive(true);
+        _isPlaying = true;
         EventManager.Trigger("ChangeBool");
     }
 
@@ -43,6 +54,7 @@ public class CanvasController : MonoBehaviour
     {
         baseScreen.gameObject.SetActive(false);
         pauseScreen.gameObject.SetActive(true);
+        _isPlaying = false;
         EventManager.Trigger("ChangeBool");
     }
 
@@ -50,7 +62,53 @@ public class CanvasController : MonoBehaviour
     {
         baseScreen.gameObject.SetActive(true);
         pauseScreen.gameObject.SetActive(false);
+        _isPlaying = true;
         EventManager.Trigger("ChangeBool");
+    }
+
+    public void BTN_Options()
+    {
+        pauseScreen.SetActive(false);
+        optionsMenu.SetActive(true);
+    }
+    
+    public void SetMusicState(bool state)
+    {
+        if (state)
+        {
+            SoundManager.instance.ChangeVolumeMusic(1);
+            PlayerPrefs.SetInt("Music", 1);
+        }
+        else
+        {
+            SoundManager.instance.ChangeVolumeMusic(0);
+            PlayerPrefs.SetInt("Music", 0);
+        }
+    }
+
+    public void SetSoundsState(bool state)
+    {
+        if (state)
+        {
+            SoundManager.instance.ChangeVolumeSound(1);
+            PlayerPrefs.SetInt("Sound", 1);
+        }
+        else
+        {
+            SoundManager.instance.ChangeVolumeSound(0);
+            PlayerPrefs.SetInt("Sound", 0);
+        }
+    }
+
+    public void SetButtons(int button)
+    {
+        PlayerPrefs.SetInt("ActualControls", button);
+    }
+
+    public void BTN_Back()
+    {
+        optionsMenu.SetActive(false);
+        pauseScreen.SetActive(true);
     }
 
     public void BTN_SeeAdd()
@@ -76,7 +134,7 @@ public class CanvasController : MonoBehaviour
         SceneManager.LoadScene("Level1");
     }
 
-    void FinishRun(params object[] parameter)
+    private void FinishRun(params object[] parameter)
     {
         int finalScore;
         if ((int)parameter[0] == 0)
@@ -94,15 +152,14 @@ public class CanvasController : MonoBehaviour
         scoreLoseText.text = "Score: " + finalScore;
     }
 
-    void AddScore(params object[] parameter)
+    private void AddScore(params object[] parameter)
     {
         score += (int)parameter[0];
     }
 
-    void DmgLife(params object[] parameter)
+    private void DmgLife(params object[] parameter)
     {
         lifes[(int)parameter[0]].SetActive(false);
-        Debug.Log(parameter[0]);
 
         if ((int)parameter[0] <= 0)
         {
@@ -111,8 +168,30 @@ public class CanvasController : MonoBehaviour
         }
     }
 
-    void HealLife(params object[] parameter)
+    private void HealLife(params object[] parameter)
     {
         lifes[(int)parameter[0]].SetActive(true);
+    }
+
+    private void SetButtons(params object[] parameters)
+    {
+        var controller = (Controller)parameters[0];
+
+        _movementButtons[0].onClick.AddListener(controller.RightButton);
+        _movementButtons[1].onClick.AddListener(controller.LeftButton);
+        _movementButtons[2].onClick.AddListener(controller.JumpButton);
+        _movementButtons[3].onClick.AddListener(controller.SlideButton);
+    }
+
+    private void ChangeButtons(params object[] parameters)
+    {
+        if ((bool)parameters[0])
+        {
+            _buttonsParent.SetActive(true);
+        }
+        else
+        {
+            _buttonsParent.SetActive(false);
+        }
     }
 }

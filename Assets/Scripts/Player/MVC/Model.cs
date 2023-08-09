@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
+public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin, IMultiplier
 {
     public List<Transform> posibleMove;
-    [SerializeField] private Collider[] _colliders; 
+    [SerializeField] private Collider[] _colliders;
     public int actualPosition = 1;
     public LayerMask floorMask;
 
@@ -19,13 +19,26 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
 
     Rigidbody _rb;
 
-    public enum viewNames {STAY, MOVEMENT, JUMP, SLIDE, DEATH, SHIELDIN, SHIELDOUT}
+    private int actualCoinMultiplier = 1;
+
+    public enum viewNames
+    {
+        STAY,
+        MOVEMENT,
+        JUMP,
+        SLIDE,
+        DEATH,
+        SHIELDIN,
+        SHIELDOUT
+    }
+
     public List<Action> actionsList = new List<Action>(7);
 
     public event Action<int> healthTake;
     public event Action<int> damageTake;
 
     public delegate void DamageEntry();
+
     public DamageEntry fromTop;
     public DamageEntry fromBot;
     public DamageEntry allDamage;
@@ -34,20 +47,17 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
     bool _isRunning = false;
     bool _isOnAir = false;
 
-    void Awake()
+    private void Awake()
     {
         EventManager.ResetEventDictionary();
-    }
 
-    private void Start()
-    {
         for (var i = 0; i < 7; i++)
         {
             Action newAction = delegate { };
             actionsList.Add(newAction);
         }
 
-        _controller = new Controller(this, GetComponent<View>());
+
         _rb = GetComponent<Rigidbody>();
 
         fromBot = ApplyDmg;
@@ -61,13 +71,28 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
         EventManager.Subscribe("ChangeBool", InitialVoid);
     }
 
-    void Update()
+    private void Start()
+    {
+        _controller = new Controller(this, GetComponent<View>());
+    }
+
+    private void Update()
     {
         _controller?.OnUpdate();
-        _controller?.GetDir();
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            EventManager.Trigger("ChangeInputs", 0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            EventManager.Trigger("ChangeInputs", 1);
+        }
     }
 
     #region STARTING VOID
+
     public void InitialVoid(params object[] parameter)
     {
         _isRunning = !_isRunning;
@@ -77,47 +102,51 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
         else
             actionsList[(int)viewNames.STAY]?.Invoke();
     }
+
     #endregion
 
     #region POSIBLE ACTIONS
+
     public void Move(bool right)
     {
         if (right && actualPosition < 2)
         {
             actualPosition++;
-            transform.position = new Vector3(posibleMove[actualPosition].position.x, transform.position.y, transform.position.z);
+            transform.position = new Vector3(posibleMove[actualPosition].position.x, transform.position.y,
+                transform.position.z);
         }
         else if (!right && actualPosition > 0)
         {
             actualPosition--;
-            transform.position = new Vector3(posibleMove[actualPosition].position.x, transform.position.y, transform.position.z);
+            transform.position = new Vector3(posibleMove[actualPosition].position.x, transform.position.y,
+                transform.position.z);
         }
     }
 
     public void Jump()
     {
-        if (_canMoveVertical)
-        {
-            actionsList[(int)viewNames.JUMP]?.Invoke();
-            _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
-        }
+        if (!_canMoveVertical || !Physics.Raycast(transform.position, Vector3.down, 1, floorMask)) return;
+
+
+        actionsList[(int)viewNames.JUMP]?.Invoke();
+        _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
     }
 
     public void Slide()
     {
-        if (_canMoveVertical)
-        {
-            foreach (var actualCollider in _colliders)
-            {
-                actualCollider.enabled = false;
-            }
+        if (!_canMoveVertical) return;
 
-            _colliders[1].enabled = true;
-            
-            fromTop = delegate { };
-            _canMoveVertical = false;
-            actionsList[(int)viewNames.SLIDE]?.Invoke();
+
+        foreach (var actualCollider in _colliders)
+        {
+            actualCollider.enabled = false;
         }
+
+        _colliders[1].enabled = true;
+
+        fromTop = delegate { };
+        _canMoveVertical = false;
+        actionsList[(int)viewNames.SLIDE]?.Invoke();
     }
 
     public void StopSlide()
@@ -128,14 +157,16 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
         }
 
         _colliders[0].enabled = true;
-        
+
         _canMoveVertical = true;
         fromTop = ApplyDmg;
         actionsList[(int)viewNames.MOVEMENT]?.Invoke();
     }
+
     #endregion
 
     #region POSIBLE DAMAGE
+
     public void TopDamage()
     {
         fromTop?.Invoke();
@@ -162,9 +193,11 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
             actionsList[(int)viewNames.DEATH]?.Invoke();
         }
     }
+
     #endregion
 
     #region ITEMS FUNCTIONS
+
     public void ApplyHealth()
     {
         if (_life < _maxLife)
@@ -195,36 +228,40 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin
 
     public void AddCoin(int value)
     {
-        int finalValue = value * (PlayerPrefs.GetInt("CoinLevel") + 1);
+        int finalValue = value * (PlayerPrefs.GetInt("CoinLevel") + 1) * actualCoinMultiplier;
         CoinManager.instance.AddCoins(finalValue);
         EventManager.Trigger("AddScore", finalValue);
     }
+    
+    public void ApplyMultiplier()
+    {
+        actualCoinMultiplier *= 2;
+        StartCoroutine(ResetUpgradeCoin());
+    }
+
+    private IEnumerator ResetUpgradeCoin()
+    {
+        yield return new WaitForSeconds(5);
+        actualCoinMultiplier /= 2;
+
+        actualCoinMultiplier = Mathf.Clamp(actualCoinMultiplier, 1, 20);
+    }
+
     #endregion
 
     #region COLLISIONS
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == 6)
-        {
-            if (_isRunning && _isOnAir)
-            {
-                actionsList[(int)viewNames.MOVEMENT]?.Invoke();
-                _isOnAir = false;
-            }
 
-            _canMoveVertical = true;
-            fromBot = ApplyDmg;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.layer == 6)
-        {
-            _canMoveVertical = false;
-            fromBot = delegate { };
-            _isOnAir = true;
-        }
+        if (other.gameObject.layer != 6) return;
+        
+        actionsList[(int)viewNames.MOVEMENT]?.Invoke();
+        _isOnAir = false;
+        _canMoveVertical = true;
+        fromBot = ApplyDmg;
     }
+    
     #endregion
+
+
 }

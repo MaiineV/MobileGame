@@ -1,15 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Controller
 {
-    Model _model;
+    private Action ActualControl = delegate { };
 
-    [SerializeField] int distancePixel = 50;
+    private readonly Model _model;
 
-    Vector2 initPosSwipe;
-    Vector2 finalPosSwipe;
+    private const int _distancePixel = 50;
+
+    private Vector2 _initPosSwipe;
+    private Vector2 _finalPosSwipe;
 
     public Controller(Model model, View view)
     {
@@ -25,43 +28,122 @@ public class Controller
 
         _model.healthTake += view.V_TakeHealth;
         _model.damageTake += view.V_TakeDamage;
+
+        EventManager.Subscribe("ChangeInputs", ChangeInputs);
+        EventManager.Trigger("SetButtons", this);
+
+        if (PlayerPrefs.HasKey("ActualControls"))
+        {
+            var control = PlayerPrefs.GetInt("ActualControls");
+
+            switch (control)
+            {
+                case 0:
+                    ActualControl = SwipeControllers;
+                    EventManager.Trigger("ChangeButtons", false);
+                    break;
+                case 1:
+                    ActualControl =  delegate { };
+                    EventManager.Trigger("ChangeButtons", true);
+                    break;
+            }
+        }
+        else
+        {
+            ActualControl = SwipeControllers;
+            EventManager.Trigger("ChangeButtons", false);
+        }
+
+#if UNITY_EDITOR
+        ActualControl += KeyBoardControllers;
+#endif
     }
 
     public void OnUpdate()
     {
+        ActualControl();
+    }
+
+    private void ChangeInputs(params object[] parameters)
+    {
+        switch ((int)parameters[0])
+        {
+            case 0:
+                ActualControl = SwipeControllers;
+                EventManager.Trigger("ChangeButtons", false);
+                break;
+            case 1:
+                ActualControl =  delegate { };
+                EventManager.Trigger("ChangeButtons", true);
+                break;
+        }
+
+#if UNITY_EDITOR
+        ActualControl += KeyBoardControllers;
+#endif
+    }
+
+    #region Swipe
+
+    private void SwipeControllers()
+    {
         if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
         {
-            initPosSwipe = Input.touches[0].position;
+            _initPosSwipe = Input.touches[0].position;
         }
         else if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Ended)
         {
-            finalPosSwipe = Input.touches[0].position;
-            GetDir();
+            _finalPosSwipe = Input.touches[0].position;
+
+            if (_finalPosSwipe.y > (_initPosSwipe.y + _distancePixel))
+            {
+                _model.Jump();
+            }
+            else if (_finalPosSwipe.x > (_initPosSwipe.x + _distancePixel))
+            {
+                _model.Move(true);
+            }
+            else if (_initPosSwipe.x > (_finalPosSwipe.x + _distancePixel))
+            {
+                _model.Move(false);
+            }
+            else if (_finalPosSwipe.y < (_initPosSwipe.y + _distancePixel))
+            {
+                _model.Slide();
+            }
         }
     }
 
-    public void GetDir()
-    {
-#if UNITY_ANDROID
-        // if (finalPosSwipe.y > (initPosSwipe.y + distancePixel))
-        // {
-        //     _model.Jump();
-        // }
-        // else if (finalPosSwipe.x > (initPosSwipe.x + distancePixel))
-        // {
-        //     _model.Move(true);
-        // }
-        // else if (initPosSwipe.x > (finalPosSwipe.x + distancePixel))
-        // {
-        //     _model.Move(false);
-        // }
-        // else if (finalPosSwipe.y < (initPosSwipe.y + distancePixel))
-        // {
-        //     _model.Slide();
-        // }
-#endif
+    #endregion
 
-#if UNITY_EDITOR_WIN
+    #region Buttons
+
+    public void RightButton()
+    {
+        _model.Move(true);
+    }
+
+    public void LeftButton()
+    {
+        _model.Move(false);
+    }
+
+    public void JumpButton()
+    {
+        _model.Jump();
+    }
+
+    public void SlideButton()
+    {
+        _model.Slide();
+    }
+
+    #endregion
+
+    #region Keyboard
+
+    private void KeyBoardControllers()
+    {
         if (Input.GetKeyDown(KeyCode.W))
         {
             _model.Jump();
@@ -78,6 +160,8 @@ public class Controller
         {
             _model.Slide();
         }
-#endif
     }
+
+    #endregion
+    
 }
