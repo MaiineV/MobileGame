@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
@@ -64,7 +63,7 @@ public class MainMenu : MonoBehaviour
 
     public void BTN_Start()
     {
-        SceneManager.LoadScene("Level1");
+        LoadingScreenManager.instance.LoadScene(2);
     }
 
     public void BTN_Shop()

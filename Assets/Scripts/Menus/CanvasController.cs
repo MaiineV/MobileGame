@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour
@@ -37,7 +36,7 @@ public class CanvasController : MonoBehaviour
     private void Update()
     {
         if (!_isPlaying) return;
-        
+
         score += Time.deltaTime;
         scoreText.text = "Score: " + (int)score;
     }
@@ -71,7 +70,7 @@ public class CanvasController : MonoBehaviour
         pauseScreen.SetActive(false);
         optionsMenu.SetActive(true);
     }
-    
+
     public void SetMusicState(bool state)
     {
         if (state)
@@ -103,6 +102,7 @@ public class CanvasController : MonoBehaviour
     public void SetButtons(int button)
     {
         PlayerPrefs.SetInt("ActualControls", button);
+        EventManager.Trigger("ChangeInputs", button);
     }
 
     public void BTN_Back()
@@ -126,12 +126,12 @@ public class CanvasController : MonoBehaviour
 
     public void BTN_Quit()
     {
-        SceneManager.LoadScene("MainMenu");
+        LoadingScreenManager.instance.LoadScene(1);
     }
 
     public void BTN_Retry()
     {
-        SceneManager.LoadScene("Level1");
+        LoadingScreenManager.instance.LoadScene(2);
     }
 
     private void FinishRun(params object[] parameter)
@@ -185,13 +185,6 @@ public class CanvasController : MonoBehaviour
 
     private void ChangeButtons(params object[] parameters)
     {
-        if ((bool)parameters[0])
-        {
-            _buttonsParent.SetActive(true);
-        }
-        else
-        {
-            _buttonsParent.SetActive(false);
-        }
+        _buttonsParent.SetActive((bool)parameters[0]);
     }
 }

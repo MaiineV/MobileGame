@@ -79,16 +79,6 @@ public class Model : MonoBehaviour, ITakeDamage, IHeal, IShield, ICoin, IMultipl
     private void Update()
     {
         _controller?.OnUpdate();
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            EventManager.Trigger("ChangeInputs", 0);
-        }
-
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            EventManager.Trigger("ChangeInputs", 1);
-        }
     }
 
     #region STARTING VOID
